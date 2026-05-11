@@ -213,70 +213,26 @@ The module produces several evaluation outputs:
 The module can be used through the main script:
 
 ```bash
-./run_siamese_analysis.py --residuals path/to/residuals.pth --source direct --output-dir results
+python siamese_analysis/cli.py --residuals path/to/residuals.pth --source direct --output-dir results
 ```
 
 ### Command Line Arguments
 
-#### Input/Output
-- `--residuals`: Path to the residuals file (.pth) [required]
-- `--source`: Source type of residuals: direct PINN or hybrid RNN-PINN [default: direct]
-- `--output-dir`: Output directory [default: siamese_results_v3]
+This module evolves frequently. To avoid stale documentation, use the CLI help as the source of truth for currently supported arguments and defaults:
 
-#### Data Processing
-- `--fft-length`: Length of FFT features [default: 128]
-- `--num-channels`: Number of channels in residuals [default: 4]
-- `--num-triplets`: Number of triplets to generate [default: 10000]
-- `--labels-to-use`: Labels to use for training (default: all)
+```bash
+python siamese_analysis/cli.py --help
+```
 
-#### Advanced Feature Extraction (v1)
-- `--advanced-features`: Use advanced feature extraction from v1 [flag]
-- `--sampling-rate`: Sampling rate in Hz [default: 50000]
-- `--include-tsfresh`: Include tsfresh features (requires tsfresh package) [flag]
-- `--wavelet`: Wavelet type to use for decomposition [default: db4]
-- `--wavelet-level`: Wavelet decomposition level [default: 3]
-- `--max-sequence-length`: Maximum sequence length for padding (auto-detect if None)
-- `--feature-workers`: Number of worker processes for parallel feature extraction (auto-detect if None)
-- `--feature-batch-size`: Batch size for parallel feature extraction [default: 10]
+Commonly used options include:
 
-#### Training
-- `--batch-size`: Batch size for training [default: 64]
-- `--epochs`: Maximum number of training epochs [default: 100]
-- `--learning-rate`: Learning rate [default: 0.001]
-- `--embedding-size`: Size of embedding vector [default: 32]
-- `--margin`: Margin for triplet loss [default: 1.0]
-- `--n-folds`: Number of cross-validation folds [default: 5]
-- `--patience`: Patience for early stopping [default: 10]
-- `--workers`: Number of worker processes for data loading [default: 4]
-
-#### Learning Rate Scheduling
-- `--lr-scheduler`: Learning rate scheduler type [choices: reduce_on_plateau, cosine_annealing, step, none] [default: reduce_on_plateau]
-- `--lr-factor`: Factor by which learning rate is reduced [default: 0.1]
-- `--lr-patience`: Number of epochs with no improvement after which learning rate will be reduced [default: 5]
-- `--lr-min`: Minimum learning rate [default: 1e-6]
-
-#### Randomized Search
-- `--num-trials`: Number of randomized search trials [default: 20]
-- `--num-top-models`: Number of top models to keep and evaluate [default: 5]
-- `--num-repeat-runs`: Number of repeat runs for each top model [default: 30]
-- `--search-space`: Size of architecture search space to explore [default: 'small']
-
-#### Evaluation
-- `--threshold`: Similarity threshold for classification [default: 0.5]
-- `--evaluate-baselines`: Evaluate baseline classifiers (LogisticRegression and PCA+KNN) for comparison [flag]
-- `--baseline-test-size`: Test set size for baseline evaluation [default: 0.3]
-
-#### Visualization
-- `--visualization-level`: Which hierarchy levels to visualize ('all' or specific level number) [default: 'all']
-- `--tsne-perplexity`: List of perplexity values for t-SNE [default: 30,50,70,90,110,150]
-- `--umap-n-neighbors`: List of n_neighbors values for UMAP [default: 5,15,30,50,100]
-- `--umap-min-dist`: List of min_dist values for UMAP [default: 0.0,0.1,0.25,0.5,0.8]
-- `--reuse-embeddings`: Whether to reuse previously saved embeddings if available [flag]
-
-#### Other
-- `--device`: Device to use (cpu or cuda, default: auto-detect)
-- `--seed`: Random seed for reproducibility [default: 42]
-- `--verbose`: Verbosity level (0=silent, 1=progress, 2=detailed) [default: 1]
+- `--residuals`
+- `--source`
+- `--output-dir`
+- `--num-triplets`
+- `--n-folds`
+- `--num-trials`
+- `--evaluate-baselines`
 
 ## Output
 

@@ -1,166 +1,110 @@
-# Hybrid PINNs for Anomaly Detection in Ring Bearings
+# PIRBADOS-RS
 
-This repository contains the code and resources for the IECON paper: **"Physics-Informed Residual-Based Anomaly Detection and Open-Set Recognition System: A Case Study on Ring Bearings"**.
+This repository contains the code and resources for the IECON paper:
+**"Physics-Informed Residual-Based Anomaly Detection and Open-Set Recognition System: A Case Study on Ring Bearings"**.
 
-## Overview
+The project is organized around a three-stage workflow:
 
-This work presents a three-stage diagnostic framework for bearing fault detection and classification:
+1. Direct PINN residual generation (`direct_analysis/`)
+2. Residual-based anomaly detection (`anomaly_detection/`)
+3. Siamese/open-set analysis (`siamese_analysis/`)
 
-1. **Physics-Based Residual (PBR) Generation** - Using Direct PINNs to generate residuals that capture deviations from expected physical behavior
-2. **EVT Anomaly Detection** - Using Extreme Value Theory to detect anomalies from the residual distributions
-3. **Siamese Neural Network (SNN) Open-Set Recognition** - Using metric learning to classify fault types and enable open-set recognition of unknown faults
+It also includes an embedded C++ benchmark (`embedded_analysis/`) and shared data/model utilities (`Data/`, `Models/`, `utils/`, `common/`).
 
-Additionally, an **Edge Computing** implementation provides a C++ benchmark for embedded deployment on resource-constrained platforms.
-
-## Repository Structure
+## Repository Layout
 
 ```
-josafat/
-├── direct_analysis/          # Stage 1: PBR Residual Generation
-├── anomaly_detection/        # Stage 2: EVT Anomaly Detection
-├── siamese_analysis/         # Stage 3: SNN Open-Set Recognition
-├── embedded_analysis/        # Edge Computing Implementation
-├── Data/                     # Data loading utilities
-├── Models/                   # PINN model definitions
-├── utils/                    # Utility functions
-├── common/                   # Shared utilities
-├── diagrams/                 # System diagrams
-├── main_IECON.tex            # Paper manuscript
-├── get_direct_pinn_residuals.py    # Script to generate PBR residuals
-└── test_direct_pinn.py             # Evaluation script for Direct PINN
+PIRBADOS-RS/
+├── direct_analysis/            # Stage 1: Direct PINN residual workflow
+├── anomaly_detection/          # Stage 2: EVT and Isolation Forest detectors
+├── siamese_analysis/           # Stage 3: Siamese/open-set workflow
+├── embedded_analysis/          # C++ embedded benchmark
+├── Data/                       # Data loading and preprocessing utilities
+├── Models/                     # PINN model definitions
+├── common/                     # Shared visualization/helpers
+├── utils/                      # Additional utilities
+├── get_direct_pinn_residuals.py
+├── test_direct_pinn.py
+└── main_IECON.tex
 ```
 
 ## Installation
 
+This repository currently does not ship a `requirements.txt`, `pyproject.toml`, or Poetry lockfile.
+Install dependencies directly in your environment (venv/conda) before running the pipelines.
+
+Example setup (pip + venv):
+
 ```bash
-# Clone the repository
-git clone https://github.com/yourusername/hybrid_pinns.git
-cd hybrid_pinns/josafat
+python -m venv .venv
 
-# Install dependencies (using poetry)
-poetry install
+# Linux/macOS
+source .venv/bin/activate
 
-# Or using pip
-pip install -r requirements.txt
+# Windows PowerShell
+.venv\Scripts\Activate.ps1
+
+pip install --upgrade pip
+pip install torch numpy scipy scikit-learn matplotlib pandas seaborn h5py tqdm pywavelets umap-learn fastdtw dtw-python torchsummary ssqueezepy
+
+# Optional: advanced feature extraction in some modules
+pip install tsfresh
 ```
 
 ## Quick Start
 
-### Stage 1: Generate Physics-Based Residuals
+### Stage 1: Direct PINN Residuals
 
-The Direct PINN analysis module generates residuals that capture deviations from expected physical behavior:
+Primary code paths are under `direct_analysis/` and helper scripts at repository root.
+
+- Direct analysis module documentation: [`direct_analysis/README.md`](./direct_analysis/README.md)
+- Legacy helper scripts: `get_direct_pinn_residuals.py`, `test_direct_pinn.py`
+
+To execute the direct analysis entry point currently present in the repository:
 
 ```bash
-# Run the complete Direct PINN pipeline
-python -m direct_analysis.cli run --output-dir results/direct_analysis
-
-# Or use the provided script
-python get_direct_pinn_residuals.py --output-dir results/residuals
+python -m direct_analysis.cli
 ```
 
-**Output**: Residuals file (`direct_pinn_residuals.pth`) containing predictions and physics-based residuals for all datasets.
+### Stage 2: Anomaly Detection (EVT / Isolation Forest)
 
-For more details, see [`direct_analysis/README.md`](./direct_analysis/README.md).
-
-### Stage 2: Anomaly Detection with EVT
-
-The anomaly detection module uses Extreme Value Theory to detect anomalies from residual distributions:
+Run anomaly detection from residual files:
 
 ```bash
-# Run anomaly detection on generated residuals
 python -m anomaly_detection.cli \
-    --residuals results/residuals/direct_pinn_residuals.pth \
-    --source direct \
-    --output anomaly_detection_results.json \
-    --methods evt
+  --residuals path/to/residuals.pth \
+  --source direct \
+  --methods evt \
+  --output anomaly_detection_results.json
 ```
 
-**Output**: Anomaly detection metrics (precision, recall, F1) and threshold parameters.
+Module documentation: [`anomaly_detection/README.md`](./anomaly_detection/README.md)
 
-For more details, see [`anomaly_detection/README.md`](./anomaly_detection/README.md).
+### Stage 3: Siamese Open-Set Analysis
 
-### Stage 3: Open-Set Recognition with Siamese Neural Network
-
-The Siamese network module performs open-set recognition and fault classification:
+The Siamese module is in `siamese_analysis/`.
 
 ```bash
-# Run the complete Siamese analysis pipeline
-python siamese_analysis/cli.py \
-    --residuals results/residuals/direct_pinn_residuals.pth \
-    --source direct \
-    --output-dir results/siamese \
-    --num-triplets 10000 \
-    --evaluate-baselines
+python siamese_analysis/cli.py --help
 ```
 
-**Output**: 
-- Trained Siamese model (`siamese_model.pt`)
-- Classification reports for all hierarchy levels
-- t-SNE/UMAP visualizations
-- Baseline comparison results
+Module documentation: [`siamese_analysis/README.md`](./siamese_analysis/README.md)
 
-For more details, see [`siamese_analysis/README.md`](./siamese_analysis/README.md).
-
-### Edge Computing Benchmark
-
-The embedded analysis module provides a C++ implementation for benchmarking on embedded platforms:
+### Embedded Benchmark (C++)
 
 ```bash
 cd embedded_analysis
-
-# Build release version
 make
-
-# Run benchmark
 make run
 ```
 
-**Output**: Average execution time and standard deviation for the complete detection pipeline.
+Module documentation: [`embedded_analysis/README.md`](./embedded_analysis/README.md)
 
-For more details, see [`embedded_analysis/README.md`](./embedded_analysis/README.md).
+## Data Files
 
-## Complete Pipeline Example
+Most training/evaluation scripts use `.pth` files under `Data/` (for example `X_normal.pth`, `Y_normal.pth` and fault variants).
 
-To run the complete three-stage diagnostic pipeline:
-
-```bash
-# 1. Generate residuals
-python -m direct_analysis.cli run --output-dir results/stage1
-
-# 2. Detect anomalies
-python -m anomaly_detection.cli \
-    --residuals results/stage1/models/direct_pinn_residuals.pth \
-    --source direct \
-    --output results/stage2/anomaly_results.json
-
-# 3. Open-set recognition
-python siamese_analysis/cli.py \
-    --residuals results/stage1/models/direct_pinn_residuals.pth \
-    --source direct \
-    --output-dir results/stage3 \
-    --evaluate-baselines
-```
-
-## Evaluation Scripts
-
-- `test_direct_pinn.py` - Evaluate Direct PINN model performance
-- `test_direct_pinn.py` can be used to validate the trained model on test datasets
-
-## Data Format
-
-The pipeline expects data in `.pth` (PyTorch) format with the following structure:
-
-```python
-{
-    'normal': {
-        'X': tensor([...]),  # Input features
-        'y': tensor([...])   # Target outputs
-    },
-    'fault_type_1': {...},
-    'fault_type_2': {...},
-    ...
-}
-```
+Residual pipelines generally produce dictionary-based `.pth` artifacts keyed by data type/fault label.
 
 ## Paper
 
@@ -168,8 +112,4 @@ DOI: https://doi.org/10.1109/IECON58223.2025.11221472
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Contact
-
-For questions or issues, please open an issue on the repository or contact the authors.
+MIT License. See `LICENSE`.

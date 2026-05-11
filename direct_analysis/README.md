@@ -29,12 +29,8 @@ Direct PINN Analysis is a pipeline for analyzing physical systems data using Phy
 ## Installation
 
 ```bash
-# Clone the repository
-git clone https://github.com/yourusername/hybrid_pinns.git
-cd hybrid_pinns
-
-# Install dependencies
-pip install -r requirements.txt
+# This module is part of PIRBADOS-RS.
+# Use the environment/dependency setup described in the repository root README.
 ```
 
 ## Directory Structure
@@ -59,8 +55,10 @@ direct_analysis/
 To run the complete Direct PINN analysis pipeline:
 
 ```bash
-python -m direct_analysis.cli run --output-dir results/my_analysis
+python -m direct_analysis.cli
 ```
+
+Note: the current CLI entry point in this repository is configured to launch the random-search workflow by default.
 
 This will:
 1. Load and prepare the data

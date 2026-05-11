@@ -32,13 +32,19 @@ python -m anomaly_detection.cli --residuals path/to/residuals.pth --source direc
 #### Arguments
 
 - `--residuals`: Path to the residuals file (.pth) [required]
-- `--source`: Source type of residuals: 'direct' or 'hybrid' [default: direct]
+- `--source`: Source type of residuals: 'direct', 'hybrid', or 'data_driven' [default: direct]
 - `--output`: Output file for the results [default: anomaly_detection_results.json]
-- `--workers`: Number of worker processes for grid search [default: 4]
+- `--workers`: Number of worker processes for grid search [default: 8]
 - `--sample-rate`: Sample rate in Hz for FFT features [default: 50000]
-- `--methods`: Methods to evaluate ('evt', 'isolation_forest', or 'all') [default: all]
+- `--methods`: Methods to evaluate ('evt', 'isolation_forest', or 'all') [default: evt]
 - `--plot-dir`: Directory for saving plots [default: anomaly_detection_plots]
 - `--skip-plots`: Skip generating plots [flag]
+
+For the latest options, use:
+
+```bash
+python -m anomaly_detection.cli --help
+```
 
 ### Programmatic Usage
 
